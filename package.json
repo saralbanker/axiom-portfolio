@@ -1,0 +1,22 @@
+{
+  "name": "creative-3d-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "lenis": "^1.3.18",
+    "split-type": "^0.3.4",
+    "stats.js": "^0.17.0",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "vite-plugin-glsl": "^1.3.0"
+  }
+}
