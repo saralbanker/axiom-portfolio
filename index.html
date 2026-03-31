@@ -4,18 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AXIOM — Design. Build. Ship.</title>
-    <meta property="og:title" content="AXIOM — Design. Build. Ship.">
-    <meta property="og:description" content="Full-service digital studio. UI/UX Design, Software Development, Award-quality Web.">
+    <title>AXIOM — Digital Gallery</title>
+    <meta name="description"
+        content="High-end UI/UX Design and Full-Stack Engineering. We build products worth talking about with editorial minimalism and performance-first architecture.">
+    <meta property="og:title" content="AXIOM — Editorial Minimalism">
+    <meta property="og:description"
+        content="Design. Build. Ship. Performance-grade engineering for startups and founders.">
     <meta property="og:type" content="website">
-    <meta name="theme-color" content="#F2EDE4">
+    <meta name="theme-color" content="#131313">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Mono:wght@400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/src/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 
 <body>
@@ -34,9 +38,15 @@
     <div id="cd" class="cd"></div>
     <div id="cr" class="cr"></div>
 
+    <!-- 3D Progress Bar -->
+    <div class="v-progress-wrap glass mono-xs">
+        <div id="v-progress-fill" class="v-progress-fill"></div>
+        <div class="v-progress-label">EXPLORE_</div>
+    </div>
+
     <!-- Navigation -->
     <nav id="nav" class="nav">
-        <a href="#hero" class="nav-logo">AXI<span>OM</span></a>
+        <a href="#hero" class="nav-logo mag">AXI<span>OM</span></a>
         <div class="nav-links mono-xs">
             <a href="#work">Work</a>
             <a href="#services">Services</a>
@@ -69,23 +79,20 @@
 
     <!-- WebGL Canvas -->
     <canvas id="cv"></canvas>
+    <div class="proj-cursor-img" id="proj-cursor-img" aria-hidden="true">
+        <img id="proj-cursor-img-el" src="" alt="" loading="lazy">
+    </div>
 
     <div class="sidebar-label" aria-hidden="true">
         AXIOM STUDIO · AHMEDABAD · 2025 · INDIA
     </div>
 
-    <div class="scroll-progress-wrap" aria-hidden="true">
-        <div class="scroll-progress-track">
-            <div class="scroll-progress-fill" id="scroll-progress-fill"></div>
-        </div>
-        <span class="scroll-progress-pct" id="scroll-pct">0</span>
-    </div>
 
     <!-- Scroll Container -->
     <div id="scroll-container" class="scroll-container">
 
         <!-- 02 — HERO -->
-        <section id="hero" class="hero-section">
+        <section id="hero" class="hero-section" data-z-depth="100">
             <div class="hero-sticky">
                 <div class="hero-content">
                     <h1 class="hero-h1 split-heading" data-a>
@@ -94,7 +101,8 @@
                         <span class="hero-accent">Ship.</span>
                     </h1>
                     <div class="hero-services mono-xs" data-a>
-                        UI/UX Design <span class="hero-dot"></span> Full-Stack Engineering <span class="hero-dot"></span> WebGL & 3D
+                        UI/UX Design <span class="hero-dot"></span> Full-Stack Engineering <span
+                            class="hero-dot"></span> WebGL & 3D
                     </div>
                     <div class="hero-ctas" data-a>
                         <a href="#work" class="btn-primary mag mono-xs">See Our Work</a>
@@ -140,33 +148,38 @@
         </section>
 
         <!-- 04 — ABOUT -->
-        <section id="about" class="sec">
+        <section id="about" class="sec" data-z-depth="50">
             <div class="container">
                 <span class="sec-bg-num" aria-hidden="true">01</span>
                 <div class="sec-label mono-xs">04 — ABOUT</div>
                 <div class="about-grid">
                     <div class="about-quote">
-                        <h2 class="split-heading">We are AXIOM — a studio that designs, builds, and ships digital products <em>people actually use.</em></h2>
-                        <p class="mono-xs">No offshore teams. No account managers. Just the two people who do the work.</p>
+                        <h2 class="split-heading">We are AXIOM — a studio that designs, builds, and ships digital
+                            products <em>people actually use.</em></h2>
+                        <p class="mono-xs">No offshore teams. No account managers. Just the two people who do the work.
+                        </p>
                     </div>
                     <div class="about-content">
                         <div class="stat-row">
                             <div class="stat-card glass">
-                                <div class="stat-n Cormorant">50+</div>
+                                <div class="stat-n">50+</div>
                                 <div class="stat-l mono-xs">Projects</div>
                             </div>
                             <div class="stat-card glass">
-                                <div class="stat-n Cormorant">3</div>
+                                <div class="stat-n">3</div>
                                 <div class="stat-l mono-xs">Disciplines</div>
                             </div>
                             <div class="stat-card glass">
-                                <div class="stat-n Cormorant">100%</div>
+                                <div class="stat-n">100%</div>
                                 <div class="stat-l mono-xs">Client Return</div>
                             </div>
                         </div>
-                        <div class="about-text f2">
-                            <p>Every project gets the full stack: product strategy, pixel-perfect design, and production-grade engineering. We've worked with bootstrapped founders and funded startups across fintech, SaaS, and consumer tech.</p>
-                            <p>Based in Ahmedabad. Working globally. From 48-hour prototypes to 6-month product builds — we've done both, and we know the difference.</p>
+                        <div class="about-text">
+                            <p>Every project gets the full stack: product strategy, pixel-perfect design, and
+                                production-grade engineering. We've worked with bootstrapped founders and funded
+                                startups across fintech, SaaS, and consumer tech.</p>
+                            <p>Based in Ahmedabad. Working globally. From 48-hour prototypes to 6-month product builds —
+                                we've done both, and we know the difference.</p>
                         </div>
                     </div>
                 </div>
@@ -174,46 +187,52 @@
         </section>
 
         <!-- 05 — SERVICES -->
-        <section id="services" class="sec">
+        <section id="services" class="sec" data-z-depth="-20">
             <div class="container">
                 <span class="sec-bg-num" aria-hidden="true">02</span>
                 <div class="sec-label mono-xs">05 — SERVICES</div>
                 <h2 class="sec-h2">Five disciplines.<br><em>One obsession.</em></h2>
-                <p class="svc-intro">We don't split teams. Every project gets the full AXIOM stack — design, engineering, and performance working as one.</p>
+                <p class="svc-intro">We don't split teams. Every project gets the full AXIOM stack — design,
+                    engineering, and performance working as one.</p>
                 <div class="svc-list">
                     <div class="svc-row">
                         <div class="svc-num mono-xs">01</div>
-                        <div class="svc-name Cormorant">UI/UX Design</div>
+                        <div class="svc-name">UI/UX Design</div>
                         <div class="svc-tech mono-xs">Figma / Framer</div>
-                        <div class="svc-desc">From blank canvas to design system. Figma, Framer, user testing. We've built systems with 100+ components that teams actually use.</div>
+                        <div class="svc-desc">From blank canvas to design system. Figma, Framer, user testing. We've
+                            built systems with 100+ components that teams actually use.</div>
                         <div class="svc-arr">→</div>
                     </div>
                     <div class="svc-row">
                         <div class="svc-num mono-xs">02</div>
-                        <div class="svc-name Cormorant">Full-Stack Development</div>
+                        <div class="svc-name">Full-Stack Development</div>
                         <div class="svc-tech mono-xs">Next.js / Node.js</div>
-                        <div class="svc-desc">React, Next.js, Node.js, Python. We write the architecture, the tests, and the docs. We maintain what we deploy. No technical debt passed to your next hire.</div>
+                        <div class="svc-desc">React, Next.js, Node.js, Python. We write the architecture, the tests, and
+                            the docs. We maintain what we deploy. No technical debt passed to your next hire.</div>
                         <div class="svc-arr">→</div>
                     </div>
                     <div class="svc-row">
                         <div class="svc-num mono-xs">03</div>
-                        <div class="svc-name Cormorant">High-Performance WebGL</div>
+                        <div class="svc-name">High-Performance WebGL</div>
                         <div class="svc-tech mono-xs">Three.js / custom shaders</div>
-                        <div class="svc-desc">Three.js, GSAP, custom GLSL shaders. The kind of web that wins Awwwards. If your brand deserves a 3D experience, we build it without a plugin.</div>
+                        <div class="svc-desc">Three.js, GSAP, custom GLSL shaders. The kind of web that wins Awwwards.
+                            If your brand deserves a 3D experience, we build it without a plugin.</div>
                         <div class="svc-arr">→</div>
                     </div>
                     <div class="svc-row">
                         <div class="svc-num mono-xs">04</div>
-                        <div class="svc-name Cormorant">API & Backend Systems</div>
+                        <div class="svc-name">API & Backend Systems</div>
                         <div class="svc-tech mono-xs">PostgreSQL / Supabase</div>
-                        <div class="svc-desc">Supabase, PostgreSQL, REST and GraphQL. Real-time systems, scalable infrastructure, and cloud deployments that handle your launch day.</div>
+                        <div class="svc-desc">Supabase, PostgreSQL, REST and GraphQL. Real-time systems, scalable
+                            infrastructure, and cloud deployments that handle your launch day.</div>
                         <div class="svc-arr">→</div>
                     </div>
                     <div class="svc-row">
                         <div class="svc-num mono-xs">05</div>
-                        <div class="svc-name Cormorant">Performance & SEO</div>
+                        <div class="svc-name">Performance & SEO</div>
                         <div class="svc-tech mono-xs">Lighthouse / SEO Audits</div>
-                        <div class="svc-desc">Core Web Vitals, structured data, sub-2s load targets. We've taken production sites from 40 to 95+ Lighthouse. We optimise for the metrics that matter.</div>
+                        <div class="svc-desc">Core Web Vitals, structured data, sub-2s load targets. We've taken
+                            production sites from 40 to 95+ Lighthouse. We optimise for the metrics that matter.</div>
                         <div class="svc-arr">→</div>
                     </div>
                 </div>
@@ -221,7 +240,7 @@
         </section>
 
         <!-- 06 — WORK -->
-        <section id="work" class="sec">
+        <section id="work" class="sec" data-z-depth="20">
             <div class="container">
                 <span class="sec-bg-num" aria-hidden="true">03</span>
                 <div class="sec-label mono-xs">06 — WORK</div>
@@ -235,7 +254,7 @@
                     <button class="ftab" data-filter="web">Web</button>
                 </div>
 
-                <div id="project-grid" class="proj-list">
+                <div id="project-grid" class="proj-list-v2">
                     <!-- JS fills this -->
                 </div>
             </div>
@@ -249,7 +268,8 @@
                 <div class="contact-grid">
                     <div class="contact-info">
                         <h2 class="split-heading">Let's build something <em>worth talking about.</em></h2>
-                        <p>We take on 4 projects per quarter. If you're reading this, there may still be a slot. Response within 24 hours.</p>
+                        <p>We take on 4 projects per quarter. If you're reading this, there may still be a slot.
+                            Response within 24 hours.</p>
                         <div class="contact-details mono-xs">
                             <div class="contact-link">Email: <a href="mailto:hello@axiom.studio">hello@axiom.studio</a>
                             </div>
@@ -260,16 +280,18 @@
                     <div class="contact-form-wrap glass">
                         <form id="contact-form" class="form" action="https://formspree.io/f/xvgpewzb" method="POST">
                             <div class="fg">
-                                <label class="mono-xs">NAME_</label>
-                                <input type="text" name="name" class="fi Cormorant" placeholder="What should we call you?">
+                                <label class="mono-xs" for="form-name">NAME_</label>
+                                <input type="text" id="form-name" name="name" class="fi"
+                                    placeholder="What should we call you?" required>
                             </div>
                             <div class="fg">
-                                <label class="mono-xs">EMAIL_</label>
-                                <input type="email" name="email" class="fi Cormorant" placeholder="Where should we reply?">
+                                <label class="mono-xs" for="form-email">EMAIL_</label>
+                                <input type="email" id="form-email" name="email" class="fi"
+                                    placeholder="Where should we reply?" required>
                             </div>
                             <div class="fg">
-                                <label class="mono-xs">SERVICE_</label>
-                                <select name="service" class="fse Cormorant">
+                                <label class="mono-xs" for="form-service">SERVICE_</label>
+                                <select id="form-service" name="service" class="fse">
                                     <option value="ui">UI/UX Design</option>
                                     <option value="dev">Full-Stack Development</option>
                                     <option value="web">High-Performance WebGL</option>
@@ -279,14 +301,14 @@
                                 </select>
                             </div>
                             <div class="fg">
-                                <label class="mono-xs">BRIEF_</label>
-                                <textarea name="message" class="fta Cormorant" rows="4"
-                                    placeholder="Tell us about your vision..."></textarea>
+                                <label class="mono-xs" for="form-message">BRIEF_</label>
+                                <textarea id="form-message" name="message" class="fta" rows="4"
+                                    placeholder="Tell us about your vision..." required></textarea>
                             </div>
                             <button type="submit" class="btn-primary mono-xs">Send It →</button>
                         </form>
                         <div id="form-success" class="form-success" style="display: none;">
-                            <h3 class="success-title Cormorant">GOT IT.</h3>
+                            <h3 class="success-title">GOT IT.</h3>
                             <p class="success-sub mono-xs">We'll be in touch within 24 hours.</p>
                         </div>
                     </div>
@@ -298,15 +320,15 @@
         <footer class="footer">
             <div class="container">
                 <div class="footer-email-cta">
-            <a href="mailto:hello@axiom.studio" class="footer-email-link">
-                hello@axiom.studio
-            </a>
-        </div>
+                    <a href="mailto:hello@axiom.studio" class="footer-email-link char-wave mag">
+                        hello@axiom.studio
+                    </a>
+                </div>
 
-        <div class="footer-top">
+                <div class="footer-top">
                     <div class="footer-brand">
                         <div class="footer-logo">AXI<span>OM</span></div>
-                        <p class="footer-tag Cormorant">Design. Build. Ship.</p>
+                        <p class="footer-tag">Design. Build. Ship.</p>
                     </div>
                     <nav class="footer-nav mono-xs">
                         <a href="#work">Work</a>

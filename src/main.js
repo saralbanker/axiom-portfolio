@@ -75,9 +75,9 @@ class CreativeEngine {
     this.elapsedTime = 0
     this.stats = null
 
-    // Cursor lerp values
-    this.cursorX = 0; this.cursorY = 0
-    this.cursorTargetX = 0; this.cursorTargetY = 0
+    // Cursor lerp values (Initialized to screen center for immediate visibility)
+    this.cursorX = window.innerWidth / 2; this.cursorY = window.innerHeight / 2
+    this.cursorTargetX = this.cursorX; this.cursorTargetY = this.cursorY
     this.canvasHovered = 0
     this.scrollVelocity = 0
     this.lastScrollY = 0
@@ -100,15 +100,23 @@ class CreativeEngine {
   }
 
   init() {
+    // Scroll progress bar
+    const pbar = document.createElement('div')
+    pbar.className = 'scroll-progress-bar'
+    document.body.prepend(pbar)
+    this._progressBar = pbar
+
     this.initRenderer()
     this.initScene()
     this.initLenis()
     this.addObjects()
     this.initScrollScene()
     this.initScrollStory()
+    this.initTextAnimations()
     this.initScrollAnimations()
     this.initCursor()
     this.initMagnetic()
+    this.initCharacterWave()
     this.initPreloader()
     this.initProjectGrid()
     this.initContactForm()
@@ -127,7 +135,7 @@ class CreativeEngine {
         this.stats = new Stats()
         this.stats.showPanel(0)
         document.body.appendChild(this.stats.dom)
-      }).catch(() => {})
+      }).catch(() => { })
     }
 
     document.fonts.ready.then(() => this.initSplitType())
@@ -142,7 +150,7 @@ class CreativeEngine {
     })
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     this.renderer.setSize(window.innerWidth, window.innerHeight)
-    
+
     window.addEventListener('resize', () => {
       this.camera.aspect = window.innerWidth / window.innerHeight
       this.camera.updateProjectionMatrix()
@@ -152,11 +160,23 @@ class CreativeEngine {
 
   initScene() {
     this.scene = new THREE.Scene()
-    this.scene.fog = new THREE.FogExp2(0xF2EDE4, 0.04)
+    this.scene.fog = new THREE.FogExp2(0x131313, 0.04)
     this.camera = new THREE.PerspectiveCamera(
       60, window.innerWidth / window.innerHeight, 0.1, 100
     )
     this.camera.position.set(0, 0, 5)
+
+    // Cinematic Lighting for Refraction
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+    this.scene.add(ambientLight)
+
+    const pointLight = new THREE.PointLight(0xc3c0ff, 20)
+    pointLight.position.set(5, 5, 5)
+    this.scene.add(pointLight)
+
+    const accentLight = new THREE.PointLight(0x4f46e4, 15)
+    accentLight.position.set(-5, -5, 2)
+    this.scene.add(accentLight)
   }
 
   initLenis() {
@@ -168,24 +188,62 @@ class CreativeEngine {
       this.scrollVelocity = velocity
       this.scrollScene?.setScroll(scroll, velocity)
 
-      // Update scroll progress indicator
+      // 1. Z-Hierarchy Layering (Storytelling Depth)
+      const depthElements = document.querySelectorAll('[data-z-depth]')
+      depthElements.forEach(el => {
+        const depth = parseFloat(el.getAttribute('data-z-depth')) || 0
+        // Parallax scaling: depth determines how much the Z moves per scroll
+        const zValue = depth - (scroll * 0.05) 
+        gsap.set(el, { z: zValue, translateZ: zValue })
+      })
+
+      // 2. Variable Font-Weight Sync (Editorial Breath)
+      const headers = document.querySelectorAll('.sec-h2, .hero-h1')
+      headers.forEach(h => {
+        const rect = h.getBoundingClientRect()
+        const centerDist = Math.abs((window.innerHeight / 2) - (rect.top + rect.height / 2))
+        const focus = 1.0 - Math.min(centerDist / (window.innerHeight / 1.5), 1.0)
+        // Weight shifts from 400 (unfocused) to 800 (perfect focus)
+        const weight = 400 + (focus * 400)
+        const stretch = 100 + (focus * 20)
+        gsap.set(h, { 
+          '--font-weight': weight, 
+          '--font-stretch': `${stretch}%`,
+          skewY: velocity * 0.012 
+        })
+      })
+
+      // 3. Update scroll progress indicator
       const totalScrollable = document.body.scrollHeight - window.innerHeight
       const pct = Math.round((scroll / Math.max(totalScrollable, 1)) * 100)
       const fill = document.getElementById('scroll-progress-fill')
       const pctEl = document.getElementById('scroll-pct')
       if (fill) fill.style.height = pct + '%'
       if (pctEl) pctEl.textContent = pct
+
+      // 4. Progress bar (horizontal & vertical)
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+      const progressPct = Math.min(100, (scroll / Math.max(maxScroll, 1)) * 100)
+      
+      if (this._progressBar) {
+        this._progressBar.style.width = progressPct + '%'
+      }
+
+      const vFill = document.getElementById('v-progress-fill')
+      if (vFill) {
+        vFill.style.height = progressPct + '%'
+      }
     })
   }
 
   addObjects() {
-    this.scene.fog = new THREE.FogExp2(0xF2EDE4, 0.05)
+    // Objects are added by ScrollScene, no manual fog override needed here
   }
 
 
 
   initScrollScene() {
-    this.scrollScene = new ScrollScene(this.scene, this.camera)
+    this.scrollScene = new ScrollScene(this.scene, this.camera, this.renderer)
   }
 
   initScrollStory() {
@@ -204,6 +262,27 @@ class CreativeEngine {
         start: 'top top',
         end: 'bottom bottom',
         scrub: 1.5,
+      }
+    })
+
+    // CAMERA SYNCHRONIZATION: Tie camera Y to the exact HTML sections to eliminate overlaps.
+    gsap.to(this.scrollScene.camera.position, {
+      y: -this.scrollScene.sectionHeight,
+      scrollTrigger: {
+        trigger: '#about',
+        start: 'top bottom',
+        end: 'top top',
+        scrub: true
+      }
+    })
+    
+    gsap.to(this.scrollScene.camera.position, {
+      y: -this.scrollScene.sectionHeight * 2,
+      scrollTrigger: {
+        trigger: '#services',
+        start: 'top bottom',
+        end: 'top top',
+        scrub: true
       }
     })
 
@@ -243,6 +322,87 @@ class CreativeEngine {
         scrub: 3,
       }
     })
+  }
+
+  initTextAnimations() {
+    // ── 1. GRADIENT SWEEP on section headings ──────────────────────────────
+    const sweepObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('swept')
+          sweepObserver.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.25 })
+
+    document.querySelectorAll('.sec-h2, .about-quote h2').forEach(el => {
+      sweepObserver.observe(el)
+    })
+
+    // ── 2. WORD STAGGER REVEAL on body text (manual split — NOT SplitType) ─
+    const wordTargets = document.querySelectorAll('.sbody, .svc-intro, .about-text p')
+
+    wordTargets.forEach(el => {
+      if (el.dataset.wordSplit) return
+      el.dataset.wordSplit = '1'
+      const text = el.textContent.trim()
+      if (text.split(/\s+/).length < 3) return
+      const words = text.split(/\s+/)
+      el.innerHTML = words.map(w =>
+        `<span class="word-wrap"><span class="word">${w}</span></span>`
+      ).join(' ')
+    })
+
+    const wordObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return
+        const words = entry.target.querySelectorAll('.word')
+        words.forEach((w, i) => {
+          w.style.transitionDelay = Math.min(i * 0.038, 0.85) + 's'
+          w.classList.add('word-in')
+        })
+        wordObserver.unobserve(entry.target)
+      })
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' })
+
+    wordTargets.forEach(el => wordObserver.observe(el))
+
+    // ── 3. HERO CHAR SCATTER (anime.js) ────────────────────────────────────
+    this._runHeroCharScatter = () => {
+      if (typeof anime === 'undefined') {
+        console.warn('anime.js not loaded — skipping char scatter')
+        return
+      }
+      const heroH1 = document.querySelector('.hero-h1')
+      if (!heroH1) return
+
+      // Split text spans into .char elements (manual — NOT SplitType)
+      heroH1.querySelectorAll('span:not(.char):not([style])').forEach(span => {
+        if (span.querySelector('.char')) return
+        const chars = span.textContent.split('')
+        span.innerHTML = chars.map(c =>
+          c.trim()
+            ? `<span class="char">${c}</span>`
+            : `<span style="display:inline-block;min-width:0.28em"> </span>`
+        ).join('')
+      })
+
+      // Start invisible
+      heroH1.querySelectorAll('.char').forEach(c => { c.style.opacity = '0' })
+
+      // Scatter → origin
+      anime({
+        targets: '.hero-h1 .char',
+        opacity: [0, 1],
+        translateX: [() => anime.random(-380, 380), 0],
+        translateY: [() => anime.random(-260, 260), 0],
+        rotate: [() => anime.random(-55, 55), 0],
+        scale: [0.25, 1],
+        duration: 960,
+        delay: anime.stagger(16, { start: 180 }),
+        easing: 'easeOutExpo',
+      })
+    }
   }
 
   initScrollAnimations() {
@@ -331,6 +491,9 @@ class CreativeEngine {
       duration: 0.8,
       ease: 'power3.out'
     }, '-=0.4')
+
+    // Hero char scatter animation (anime.js)
+    setTimeout(() => this._runHeroCharScatter?.(), 280)
   }
 
   initStatCounters() {
@@ -349,7 +512,7 @@ class CreativeEngine {
           start: 'top 80%',
           once: true
         },
-        onUpdate: function() {
+        onUpdate: function () {
           el.textContent = Math.floor(this.targets()[0].val) + suffix
         }
       })
@@ -384,52 +547,75 @@ class CreativeEngine {
     const cr = document.getElementById('cr')
     if (!cd || !cr) return
 
-    document.addEventListener('mousemove', e => {
-      this.cursorTargetX = e.clientX
-      this.cursorTargetY = e.clientY
-      cd.style.transform = `translate(${e.clientX - 5}px, ${e.clientY - 5}px)`
+    // QuickTo for high performance fluid tracking
+    const xToDot = gsap.quickTo(cd, 'x', { duration: 0.02, ease: 'power3' })
+    const yToDot = gsap.quickTo(cd, 'y', { duration: 0.02, ease: 'power3' })
+    const xToRing = gsap.quickTo(cr, 'x', { duration: 0.15, ease: 'power3' })
+    const yToRing = gsap.quickTo(cr, 'y', { duration: 0.15, ease: 'power3' })
+
+    // Global listener ensures cursor follows across the entire window
+    window.addEventListener('mousemove', e => {
+      // Fix centring issues
+      xToDot(e.clientX)
+      yToDot(e.clientY)
+      xToRing(e.clientX)
+      yToRing(e.clientY)
     })
+
+    // Init position centering globally
+    gsap.set(cd, { xPercent: -50, yPercent: -50 })
+    gsap.set(cr, { xPercent: -50, yPercent: -50 })
 
     this._cd = cd
     this._cr = cr
 
-    document.querySelectorAll('a, button').forEach(el => {
-      el.addEventListener('mouseenter', () => { cd.classList.add('on-link'); cr.classList.add('on-link') })
-      el.addEventListener('mouseleave', () => { cd.classList.remove('on-link'); cr.classList.remove('on-link') })
+    document.querySelectorAll('a, button, .mag, .ftab, .proj-row-v2').forEach(el => {
+      el.addEventListener('mouseenter', () => { 
+        cd.classList.add('on-link')
+        cr.classList.add('on-link')
+        gsap.to(cr, { scale: 1.5, opacity: 0.1, duration: 0.3 }) 
+      })
+      el.addEventListener('mouseleave', () => { 
+        cd.classList.remove('on-link')
+        cr.classList.remove('on-link')
+        gsap.to(cr, { scale: 1, opacity: 0.35, duration: 0.4 })
+      })
     })
   }
 
   initMagnetic() {
-    document.querySelectorAll('.mag').forEach(el => {
-      const strength = 0.38
-      const radius = 120
-
-      el.addEventListener('mousemove', function(e) {
-        const rect = this.getBoundingClientRect()
-        const cx = rect.left + rect.width / 2
-        const cy = rect.top + rect.height / 2
-        const dx = e.clientX - cx
-        const dy = e.clientY - cy
-        const dist = Math.sqrt(dx * dx + dy * dy)
-
-        if (dist < radius) {
-          gsap.to(this, {
-            x: dx * strength,
-            y: dy * strength,
-            duration: 0.4,
-            ease: 'power2.out',
-          })
-        }
-      })
-
-      el.addEventListener('mouseleave', function() {
-        gsap.to(this, {
-          x: 0,
-          y: 0,
-          duration: 0.7,
-          ease: 'elastic.out(1, 0.4)',
+    const magElements = document.querySelectorAll('.mag, .btn-primary, .btn-secondary, .nav-logo, .footer-logo')
+    magElements.forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect()
+        const x = e.clientX - rect.left - rect.width / 2
+        const y = e.clientY - rect.top - rect.height / 2
+        // Editorial Precision: 0.45x pull for subtle premium feel
+        gsap.to(el, {
+          x: x * 0.45,
+          y: y * 0.45,
+          duration: 0.6,
+          ease: 'power2.out'
         })
       })
+      el.addEventListener('mouseleave', () => {
+        gsap.to(el, {
+          x: 0,
+          y: 0,
+          duration: 1.0,
+          ease: 'elastic.out(1, 0.3)'
+        })
+      })
+    })
+  }
+
+  initCharacterWave() {
+    const targets = document.querySelectorAll('.char-wave')
+    targets.forEach(el => {
+      const text = el.textContent.trim()
+      el.innerHTML = text.split('').map((char, i) => 
+        `<span style="--i: ${i}; display:inline-block">${char === ' ' ? '&nbsp;' : char}</span>`
+      ).join('')
     })
   }
 
@@ -446,7 +632,7 @@ class CreativeEngine {
       const progress = Math.min((now - start) / duration, 1)
       const eased = 1 - Math.pow(1 - progress, 3)
       count.textContent = Math.floor(eased * 100)
-      
+
       const barFill = document.getElementById('pre-bar-fill')
       if (barFill) barFill.style.width = (eased * 100) + '%'
 
@@ -477,55 +663,98 @@ class CreativeEngine {
     const grid = document.getElementById('project-grid')
     if (!grid) return
 
+    // ── CURSOR-FOLLOWING IMAGE SETUP ──────────────────────────────────────
+    const cursorImg = document.getElementById('proj-cursor-img')
+    const cursorImgEl = document.getElementById('proj-cursor-img-el')
+    let imgX = window.innerWidth / 2
+    let imgY = window.innerHeight / 2
+    let targetX = imgX, targetY = imgY
+
+    // Continuous lerp loop for smooth image follow
+    const lerpStep = () => {
+      imgX += (targetX - imgX) * 0.1
+      imgY += (targetY - imgY) * 0.1
+      if (cursorImg) {
+        cursorImg.style.left = imgX + 'px'
+        cursorImg.style.top = imgY + 'px'
+      }
+      requestAnimationFrame(lerpStep)
+    }
+    lerpStep()
+
+    // Track cursor in the work section
+    const workEl = document.getElementById('work')
+    workEl?.addEventListener('mousemove', e => {
+      targetX = e.clientX
+      targetY = e.clientY
+    })
+
+    // ── RENDER ROWS ────────────────────────────────────────────────────────
     const render = (filter = 'all') => {
-      const filtered = filter === 'all' ? PROJECTS : PROJECTS.filter(p => p.cat === filter)
-      grid.innerHTML = filtered.map((p, i) => `
-        <div class="proj-row" data-cat="${p.cat}">
-          <div class="proj-num mono-xs">0${i + 1}</div>
-          <div class="proj-title Cormorant">${p.title}</div>
-          <div class="proj-meta">
-            <span class="proj-cat mono-xs">${p.cat.toUpperCase()}</span>
-            <span class="proj-year mono-xs">2025</span>
-          </div>
-          <div class="proj-img-reveal">
-            <img src="${p.img}" alt="${p.title}" loading="lazy">
+      const list = filter === 'all'
+        ? PROJECTS
+        : PROJECTS.filter(p => p.cat === filter)
+
+      grid.innerHTML = list.map((p, i) => `
+        <div class="proj-row-v2" data-cat="${p.cat}" data-img="${p.img}" data-idx="${i}">
+          <span class="proj-bg-num" aria-hidden="true">0${i + 1}</span>
+          <div class="proj-row-inner">
+            <div class="proj-idx-col">
+              <span class="proj-serial mono-xs">${String(i + 1).padStart(2, '0')}</span>
+            </div>
+            <div class="proj-title-col">
+              <h3 class="proj-title">${p.title}</h3>
+              <span class="proj-tags-reveal mono-xs">${(p.tags || []).slice(0, 3).join(' · ')}</span>
+            </div>
+            <div class="proj-meta-col">
+              <span class="proj-cat-tag">${p.cat.toUpperCase()}</span>
+              <span class="proj-year mono-xs">2025</span>
+              <span class="proj-arrow">→</span>
+            </div>
           </div>
         </div>
       `).join('')
 
-      const rows = grid.querySelectorAll('.proj-row')
-      rows.forEach((row, index) => {
+      // ── HOVER EVENTS: show cursor-following image ───────────────────────
+      grid.querySelectorAll('.proj-row-v2').forEach(row => {
         row.addEventListener('mouseenter', () => {
-          this.scrollScene?.highlightPlane(index)
+          const src = row.dataset.img
+          if (cursorImgEl && src) {
+            cursorImgEl.src = src
+          }
+          cursorImg?.classList.add('active')
         })
         row.addEventListener('mouseleave', () => {
-          this.scrollScene?.resetHighlight()
+          cursorImg?.classList.remove('active')
         })
       })
 
-      gsap.from(rows, {
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: 'power3.out',
-        clearProps: 'all',
-        scrollTrigger: {
-          trigger: grid,
-          start: 'top 85%'
-        }
-      })
+      // ── GSAP STAGGER ENTRANCE ───────────────────────────────────────────
+      const rows = grid.querySelectorAll('.proj-row-v2')
+      if (rows.length) {
+        gsap.from(rows, {
+          y: 48,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.07,
+          ease: 'power3.out',
+          clearProps: 'all',
+          scrollTrigger: {
+            trigger: grid,
+            start: 'top 88%',
+          }
+        })
+      }
     }
 
     render()
 
-    // Filter tabs
+    // ── FILTER TABS ────────────────────────────────────────────────────────
     document.querySelectorAll('.ftab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'))
         tab.classList.add('active')
-        const filter = tab.getAttribute('data-filter')
-        render(filter)
+        render(tab.getAttribute('data-filter'))
       })
     })
   }
@@ -596,25 +825,58 @@ class CreativeEngine {
   }
 
   render() {
+    // 0. Render Culling (Battery Saver)
+    if (document.hidden) {
+      requestAnimationFrame(() => this.render())
+      return
+    }
+
     this.stats?.begin()
     const delta = this.clock.getDelta()
 
     if (this._cr) {
-      this.cursorX += (this.cursorTargetX - this.cursorX) * (1 - Math.pow(0.06, delta))
-      this.cursorY += (this.cursorTargetY - this.cursorY) * (1 - Math.pow(0.06, delta))
-      this._cr.style.transform = `translate(${this.cursorX - 20}px, ${this.cursorY - 20}px)`
+      // Robust lerp logic with FPS-independent delta
+      const lerpFactor = 1 - Math.pow(0.02, delta)
+      this.cursorX += (this.cursorTargetX - this.cursorX) * lerpFactor
+      this.cursorY += (this.cursorTargetY - this.cursorY) * lerpFactor
+      // Use GSAP for the final transform with percentage centering
+      gsap.set(this._cr, { x: this.cursorX, y: this.cursorY, xPercent: -50, yPercent: -50 })
     }
 
     this.elapsedTime += delta
-    
+
     const mouseXNorm = this.cursorTargetX / window.innerWidth
     const mouseYNorm = 1.0 - (this.cursorTargetY / window.innerHeight)
-    
+
     this.scrollScene?.update(delta, this.elapsedTime)
-    
+
     this.renderer.render(this.scene, this.camera)
     this.stats?.end()
     requestAnimationFrame(() => this.render())
+  }
+
+  initMagnetic() {
+    const buttons = document.querySelectorAll('.btn')
+    document.addEventListener('mousemove', (e) => {
+      const { clientX, clientY } = e
+      buttons.forEach(btn => {
+        const rect = btn.getBoundingClientRect()
+        const btnX = rect.left + rect.width / 2
+        const btnY = rect.top + rect.height / 2
+        
+        const dist = Math.hypot(clientX - btnX, clientY - btnY)
+        const limit = 80 // Magnetic reach
+        
+        if (dist < limit) {
+          const strength = 18
+          const x = (clientX - btnX) / limit * strength
+          const y = (clientY - btnY) / limit * strength
+          gsap.to(btn, { x, y, duration: 0.6, ease: 'power2.out' })
+        } else {
+          gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.3)' })
+        }
+      })
+    })
   }
 
   destroy() {
