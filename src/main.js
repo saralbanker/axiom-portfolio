@@ -566,61 +566,20 @@ class CreativeEngine {
 
   initHorizontalScroll() {
     const projectsSection = document.getElementById('projects');
-    const trackGallery = document.querySelector('.track-gallery');
+    const projectsTrack = document.querySelector('.projects-track');
     
-    if (projectsSection && trackGallery) {
-      // Auto-drifting combined with scroll
-      gsap.to('.projects-track', {
-         x: '-20vw',
-         ease: 'none',
-         duration: 25,
-         repeat: -1,
-         yoyo: true
-      });
-
-      // Pin horizontal
-      gsap.to(trackGallery, {
-        x: () => -(trackGallery.scrollWidth - window.innerWidth),
-        ease: 'none',
+    // We kept the method name for router compatibility, but it now powers the Accordion reveal!
+    if (projectsSection && projectsTrack) {
+      gsap.from(projectsTrack.children, {
+        y: 100,
+        opacity: 0,
+        stagger: 0.15,
+        duration: 1.2,
+        ease: 'power3.out',
         scrollTrigger: {
           trigger: projectsSection,
-          pin: true,
-          scrub: 2, // Heavy dampening for ultra smooth feel
-          end: () => "+=" + trackGallery.scrollWidth
+          start: 'top 75%'
         }
-      });
-      
-      // 3D Tilt Cards
-      const tiltCards = document.querySelectorAll('.tilt-card');
-      tiltCards.forEach(card => {
-        const glare = card.querySelector('.card-glare');
-        card.addEventListener('mousemove', (e) => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
-          
-          // Max rotation 15 degrees
-          const rotateX = ((y - centerY) / centerY) * -15;
-          const rotateY = ((x - centerX) / centerX) * 15;
-          
-          gsap.to(card, { rotateX, rotateY, duration: 0.5, ease: 'power2.out' });
-          
-          if (glare) {
-            glare.style.setProperty('--gx', `${x}px`);
-            glare.style.setProperty('--gy', `${y}px`);
-          }
-        });
-        
-        card.addEventListener('mouseleave', () => {
-          gsap.to(card, { rotateX: 0, rotateY: 0, duration: 1.2, ease: 'elastic.out(1, 0.3)' });
-          if (glare) {
-            glare.style.setProperty('--gx', `50%`);
-            glare.style.setProperty('--gy', `50%`);
-          }
-        });
       });
     }
   }
