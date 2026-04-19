@@ -12,7 +12,7 @@
     <meta property="og:description" content="Cinematic digital experiences and abstract visual engineering.">
     <meta property="og:image" content="/src/assets/crystal-hero.png">
     
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Manrope:wght@300;400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/style.css">
 </head>
 
@@ -26,11 +26,21 @@
 
     <!-- Page Transition Curtain -->
     <div class="transition-curtain">
-        <div class="preloader-counter">0%</div>
+        <div class="transition-shutter top-shutter"></div>
+        <div class="transition-shutter bottom-shutter"></div>
+        <div class="preloader-counter">
+           <span class="hex-track">[SYS.INIT: 0x00]</span> 
+        </div>
     </div>
 
     <header class="top-nav" role="banner">
-        <div class="logo">ORVION</div>
+        <div class="nav-left">
+            <div class="logo magnetic-kicker">ORVION</div>
+            <div class="active-node">
+                <div class="node-led"></div>
+                <div class="node-text">[ SECURE UPLINK // ORVION LABS ]</div>
+            </div>
+        </div>
         <nav class="pill-nav" role="navigation" aria-label="Main Navigation">
             <a href="index.html" class="active">Home</a>
             <a href="about.html">About</a>
@@ -75,28 +85,47 @@
             </div>
         </section>
 
-        <section id="about" class="scroll-section">
-            <div class="section-content">
-                <h2 class="section-title">A Visionary Edge</h2>
-                <p class="section-desc">We bridge the gap between abstract art and digital precision, crafting immersive experiences that redefine the modern web.</p>
+        <section id="about" class="scroll-section masked-blade">
+            <div class="editorial-noise"></div>
+            <div class="ghost-type">VISION</div>
+            <div class="about-glow"></div>
+            <div class="section-content editorial-layout">
+                <div class="editorial-left">
+                    <div class="editorial-kicker magnetic-kicker">[ 01. INTENT ]</div>
+                    <h2 class="section-title scramble-text">A Visionary Edge</h2>
+                    <div class="accent-line"></div>
+                </div>
+                <div class="editorial-right">
+                    <p class="section-desc stagger-text">We bridge the gap between abstract art and digital precision, crafting immersive experiences that redefine the modern web. Every pixel is calculated, every motion engineered, building environments that command absolute attention.</p>
+                </div>
             </div>
         </section>
 
         <section id="projects" class="scroll-section">
-            <div class="section-content">
+            <div class="kinetic-marquee mq-1">
+                <div class="mq-track"><span>SELECTED WORKS — DIGITAL ENVIRONMENTS — </span><span>SELECTED WORKS — DIGITAL ENVIRONMENTS — </span></div>
+            </div>
+            <div class="kinetic-marquee mq-2">
+                <div class="mq-track track-reverse"><span>ARCHITECTURAL SCALE — SPATIAL COMPUTING — </span><span>ARCHITECTURAL SCALE — SPATIAL COMPUTING — </span></div>
+            </div>
+
+            <div class="section-content track-gallery">
                 <h2 class="section-title">Selected Works</h2>
-                <div class="projects-grid">
-                    <div class="project-card">
+                <div class="projects-track">
+                    <div class="project-card tilt-card" style="--bg: url('/src/assets/about-hero.png')">
+                        <div class="card-glare"></div>
                         <span class="card-num">01</span>
                         <h3>Lumina</h3>
                         <p>Digital Architecture</p>
                     </div>
-                    <div class="project-card">
+                    <div class="project-card tilt-card" style="--bg: url('/src/assets/design-hero.png')">
+                        <div class="card-glare"></div>
                         <span class="card-num">02</span>
                         <h3>Aether</h3>
                         <p>Immersive Audio</p>
                     </div>
-                    <div class="project-card">
+                    <div class="project-card tilt-card" style="--bg: url('/src/assets/business-hero.png')">
+                        <div class="card-glare"></div>
                         <span class="card-num">03</span>
                         <h3>Obsidian</h3>
                         <p>Minimalist Motion</p>
@@ -105,12 +134,12 @@
             </div>
         </section>
 
-        <section id="contact" class="scroll-section">
+        <section id="contact" class="scroll-section black-hole-contact">
             <div class="section-content">
-                <h2 class="section-title">Start a Dialogue</h2>
+                <h2 class="liquid-title" data-text="START A DIALOGUE">START A DIALOGUE</h2>
                 <p class="section-desc">Ready to craft something extraordinary? Let's connect.</p>
                 <div class="contact-cta">
-                    <a href="mailto:hello@orvion.studio" class="btn-primary">Get in Touch</a>
+                    <a href="mailto:hello@orvion.studio" class="btn-primary gravity-btn"><span class="btn-text">Get in Touch</span><div class="gravity-aura"></div></a>
                 </div>
             </div>
         </section>

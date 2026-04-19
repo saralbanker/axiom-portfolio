@@ -25,6 +25,9 @@ class CreativeEngine {
     this.ctx = this.canvas?.getContext('2d')
     this.crystalGroup = document.querySelector('.layer-crystal-group')
     this.typographyLayers = document.querySelectorAll('.layer-typography, .layer-typography-top')
+    this.cryptoTrack = document.querySelector('.hex-track')
+    this.pctTrack = document.querySelector('.pct-track')
+    this.shutters = document.querySelectorAll('.transition-shutter')
     this.curtain = document.querySelector('.transition-curtain')
     this.preloaderCounter = document.querySelector('.preloader-counter')
     this.customCursor = document.querySelector('.custom-cursor')
@@ -43,10 +46,15 @@ class CreativeEngine {
 
   initLenis() {
     this.lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      wheelMultiplier: 1,
+      duration: 2.5, // Super smooth, heavy drifting scroll
+      easing: (t) => 1 - Math.pow(1 - t, 4), // Quart ease-out for glassy feeling
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      wheelMultiplier: 0.8, // Slightly lower sensitivity for deep cinematic feel
+      smoothTouch: true,
+      touchMultiplier: 1.5,
+      infinite: false,
     })
 
     const raf = (time) => {
@@ -57,29 +65,42 @@ class CreativeEngine {
   }
 
   initTransitions() {
-    // Entry Animation with numeric preloader
-    if (this.curtain) {
+    // Entry Animation with Matrix Hex Preloader
+    if (this.curtain && this.shutters.length > 0) {
+      const hexChars = "0123456789ABCDEF";
       let loader = { progress: 0 };
+      
+      gsap.to(this.preloaderCounter, { opacity: 1, duration: 0.3 });
+
       gsap.to(loader, {
         progress: 100,
-        duration: 2.2,
+        duration: 0.8, // Extremely low latency boot
         ease: 'power3.inOut',
         onUpdate: () => {
-          if (this.preloaderCounter) {
-            this.preloaderCounter.innerText = Math.floor(loader.progress) + '%';
+          if (this.cryptoTrack) {
+            let randomHex = '';
+            for(let i=0; i<6; i++) randomHex += hexChars[Math.floor(Math.random() * 16)];
+            this.cryptoTrack.innerText = `[SYS.INIT: 0x${randomHex}]`;
           }
         },
         onComplete: () => {
-          // Fade out counter before curtain lifts
-          gsap.to(this.preloaderCounter, { opacity: 0, duration: 0.4 });
+          if (this.cryptoTrack) {
+             this.cryptoTrack.innerText = '[SYS.INIT: OK]';
+          }
           
-          gsap.to(this.curtain, {
-            yPercent: -100,
-            duration: 1.2,
-            delay: 0.2,
+          gsap.to(this.preloaderCounter, { opacity: 0, duration: 0.2, delay: 0.1 });
+          
+          // Mechanical Shutter Snap open (Super fast latency)
+          gsap.to(this.shutters, {
+            scaleY: 0,
+            duration: 0.4,
+            delay: 0.1,
+            stagger: 0.05,
             ease: 'expo.inOut',
+            transformOrigin: (i) => i === 0 ? "top" : "bottom",
             onComplete: () => {
               document.body.classList.remove('is-loading')
+              gsap.set(this.curtain, { display: 'none' })
             }
           })
         }
@@ -110,10 +131,14 @@ class CreativeEngine {
         const target = href;
         const fetchPromise = window.prefetchCache?.get(target) || fetch(target).then(res => res.text());
 
-        gsap.to(this.curtain, {
-          yPercent: 0,
-          duration: 0.6,
+        gsap.set(this.curtain, { display: 'flex' });
+        
+        gsap.to(this.shutters, {
+          scaleY: 1,
+          duration: 0.35, // Fast page transition out
+          stagger: 0.05,
           ease: 'expo.inOut',
+          transformOrigin: (i) => i === 0 ? "top" : "bottom",
           onComplete: async () => {
              try {
                  const html = await fetchPromise;
@@ -144,10 +169,13 @@ class CreativeEngine {
                  window.location.href = target;
              }
 
-             gsap.to(this.curtain, {
-               yPercent: -100,
-               duration: 0.8,
-               ease: 'expo.inOut'
+             gsap.to(this.shutters, {
+               scaleY: 0,
+               duration: 0.4, // Fast transition in
+               stagger: 0.05,
+               ease: 'expo.inOut',
+               transformOrigin: (i) => i === 0 ? "top" : "bottom",
+               onComplete: () => gsap.set(this.curtain, { display: 'none' })
              });
           }
         });
@@ -324,9 +352,116 @@ class CreativeEngine {
         })
       }
     }
+
+    // ── "A Visionary Edge" UI/UX Upgrades ──
+    const aboutSection = document.getElementById('about');
+    if (aboutSection) {
+       const ghostType = aboutSection.querySelector('.ghost-type');
+       const aboutGlow = aboutSection.querySelector('.about-glow');
+       const accentLine = aboutSection.querySelector('.accent-line');
+       const staggerText = aboutSection.querySelector('.stagger-text');
+       const scrambleText = aboutSection.querySelector('.scramble-text');
+
+       if (ghostType) {
+          gsap.fromTo(ghostType, { x: '10%' }, {
+             x: '-30%',
+             ease: 'none',
+             scrollTrigger: { trigger: aboutSection, start: 'top bottom', end: 'bottom top', scrub: 1 }
+          });
+       }
+       
+       if (aboutGlow) {
+          gsap.fromTo(aboutGlow, { y: -100 }, {
+             y: 200,
+             ease: 'none',
+             scrollTrigger: { trigger: aboutSection, start: 'top bottom', end: 'bottom top', scrub: true }
+          });
+       }
+
+       if (accentLine) {
+          gsap.to(accentLine, {
+             scaleX: 1,
+             ease: 'power3.out',
+             duration: 1.5,
+             scrollTrigger: { trigger: aboutSection, start: 'top 75%' }
+          });
+       }
+
+       if (staggerText) {
+          const splitContent = new SplitType(staggerText, { types: 'lines' });
+          splitContent.lines.forEach(line => {
+             const wrapper = document.createElement('div');
+             wrapper.className = 'line-mask';
+             line.parentNode.insertBefore(wrapper, line);
+             wrapper.appendChild(line);
+          });
+
+          gsap.from(splitContent.lines, {
+             yPercent: 100,
+             opacity: 0,
+             stagger: 0.1,
+             duration: 1.2,
+             ease: 'power3.out',
+             scrollTrigger: { trigger: aboutSection, start: 'top 70%' }
+          });
+       }
+
+       if (scrambleText) {
+          const originalText = scrambleText.innerText;
+          const chars = '!<>-_\\\\/[]{}—=+*^?#________';
+          let obj = { value: 0 };
+          
+          gsap.to(obj, {
+             value: originalText.length,
+             duration: 1.5,
+             ease: 'power2.out',
+             scrollTrigger: { trigger: aboutSection, start: 'top 75%' },
+             onUpdate: () => {
+                const progress = Math.floor(obj.value);
+                const scrambled = originalText.split('').map((char, index) => {
+                   if (index < progress) return originalText[index];
+                   if (char === ' ') return ' ';
+                   return chars[Math.floor(Math.random() * chars.length)];
+                }).join('');
+                scrambleText.innerText = scrambled;
+             },
+             onComplete: () => { scrambleText.innerText = originalText; }
+          });
+       }
+    }
   }
 
   initGlobalInteractions() {
+    // Extreme Gravity Button for Contact Section
+    const gravityBtns = document.querySelectorAll('.gravity-btn');
+    gravityBtns.forEach(btn => {
+       document.addEventListener('mousemove', (e) => {
+         const rect = btn.getBoundingClientRect();
+         const centerX = rect.left + rect.width / 2;
+         const centerY = rect.top + rect.height / 2;
+         
+         const dx = e.clientX - centerX;
+         const dy = e.clientY - centerY;
+         const dist = Math.sqrt(dx * dx + dy * dy);
+         
+         // Event horizon is huge (350px)
+         if (dist < 350 && dist > 0) {
+            // Intense pull: moves 60% of the distance to the mouse!
+            const moveX = dx * 0.6;
+            const moveY = dy * 0.6;
+            gsap.to(btn, { x: moveX, y: moveY, duration: 0.6, ease: 'power3.out' });
+            
+            const btnText = btn.querySelector('.btn-text');
+            if(btnText) gsap.to(btnText, { x: moveX * 0.3, y: moveY * 0.3, duration: 0.6, ease: 'power3.out' });
+         } else {
+            // Snap back aggressively when escaping event horizon
+            gsap.to(btn, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.3)' });
+            const btnText = btn.querySelector('.btn-text');
+            if(btnText) gsap.to(btnText, { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.3)' });
+         }
+       });
+    });
+
     // Custom Cursor & Ambient Orb tracking
     if (this.customCursor && this.customCursorDot) {
       document.addEventListener('mousemove', (e) => {
@@ -383,7 +518,7 @@ class CreativeEngine {
     });
 
     // Advanced Proximal Magnetic Buttons
-    const magnets = document.querySelectorAll('.btn-primary, .pill-nav a');
+    const magnets = document.querySelectorAll('.btn-primary, .pill-nav a, .magnetic-kicker');
     magnets.forEach(btn => {
       // Create a invisible proximal zone if needed, or use distance calc
       document.addEventListener('mousemove', (e) => {
@@ -415,35 +550,78 @@ class CreativeEngine {
     navLinks.forEach(link => {
       link.addEventListener('mousemove', (e) => {
         const rect = link.getBoundingClientRect();
+        // Mouse-tracking CSS spot flare coordinates
+        link.style.setProperty('--x', `${e.clientX - rect.left}px`);
+        link.style.setProperty('--y', `${e.clientY - rect.top}px`);
+
         const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
         const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
-        gsap.to(link, { x, y, scale: 1.08, backgroundColor: 'rgba(255, 255, 255, 0.08)', duration: 0.4, ease: 'power2.out' });
+        gsap.to(link, { x, y, scale: 1.05, duration: 0.4, ease: 'power2.out' });
       });
       link.addEventListener('mouseleave', () => {
-        const isActive = link.classList.contains('active')
-        const bg = isActive ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0)'
-        gsap.to(link, { x: 0, y: 0, scale: 1, backgroundColor: bg, duration: 0.6, ease: 'elastic.out(1, 0.3)' })
+        gsap.to(link, { x: 0, y: 0, scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.3)' })
       })
     })
   }
 
   initHorizontalScroll() {
-    const horizontalTrigger = document.querySelector('.horizontal-trigger')
-    const horizontalContainer = document.querySelector('.horizontal-scroll-container')
+    const projectsSection = document.getElementById('projects');
+    const trackGallery = document.querySelector('.track-gallery');
     
-    if (horizontalTrigger && horizontalContainer) {
-      gsap.to(horizontalContainer, {
-        x: () => -(horizontalContainer.scrollWidth - window.innerWidth + 100),
+    if (projectsSection && trackGallery) {
+      // Auto-drifting combined with scroll
+      gsap.to('.projects-track', {
+         x: '-20vw',
+         ease: 'none',
+         duration: 25,
+         repeat: -1,
+         yoyo: true
+      });
+
+      // Pin horizontal
+      gsap.to(trackGallery, {
+        x: () => -(trackGallery.scrollWidth - window.innerWidth),
         ease: 'none',
         scrollTrigger: {
-          trigger: horizontalTrigger,
-          start: 'top top',
-          end: () => `+=${horizontalContainer.scrollWidth}`,
-          scrub: true,
+          trigger: projectsSection,
           pin: true,
-          anticipatePin: 1
+          scrub: 2, // Heavy dampening for ultra smooth feel
+          end: () => "+=" + trackGallery.scrollWidth
         }
-      })
+      });
+      
+      // 3D Tilt Cards
+      const tiltCards = document.querySelectorAll('.tilt-card');
+      tiltCards.forEach(card => {
+        const glare = card.querySelector('.card-glare');
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          
+          // Max rotation 15 degrees
+          const rotateX = ((y - centerY) / centerY) * -15;
+          const rotateY = ((x - centerX) / centerX) * 15;
+          
+          gsap.to(card, { rotateX, rotateY, duration: 0.5, ease: 'power2.out' });
+          
+          if (glare) {
+            glare.style.setProperty('--gx', `${x}px`);
+            glare.style.setProperty('--gy', `${y}px`);
+          }
+        });
+        
+        card.addEventListener('mouseleave', () => {
+          gsap.to(card, { rotateX: 0, rotateY: 0, duration: 1.2, ease: 'elastic.out(1, 0.3)' });
+          if (glare) {
+            glare.style.setProperty('--gx', `50%`);
+            glare.style.setProperty('--gy', `50%`);
+          }
+        });
+      });
     }
   }
 
