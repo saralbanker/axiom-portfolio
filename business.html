@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business — ORVION</title>
+    <meta name="description" content="Strategic digital blueprints and high-fidelity architecture for modern business objectives.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body class="is-loading">
+    <!-- UI/UX Enhancements -->
+    <div class="noise-layer"></div>
+    <div class="ambient-orb"></div>
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-dot"></div>
+    <div class="scroll-progress-container"><div class="scroll-progress-bar"></div></div>
+
+    <div class="transition-curtain">
+        <div class="preloader-counter">0%</div>
+    </div>
+
+    <header class="top-nav" role="banner">
+        <div class="logo">ORVION</div>
+        <nav class="pill-nav" role="navigation" aria-label="Main Navigation">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="business.html" class="active">Business</a>
+            <a href="design.html">Design</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <main class="ui-layer">
+
+        <section id="hero" class="scroll-section" data-page="business">
+            <div class="hero-layer layer-bg">
+                <img src="/src/assets/business-hero.png" alt="Business Hero">
+            </div>
+            <div class="hero-layer layer-fog">
+                <img src="/src/assets/bg/fog-layer-distant.png" alt="">
+            </div>
+            <canvas id="particle-canvas" class="hero-layer layer-particles"></canvas>
+            <div class="hero-layer layer-typography">
+                <h1 class="hero-text">STRATEGY</h1>
+            </div>
+            <div class="hero-layer layer-typography-top">
+                <h1 class="hero-text text-outline">STRATEGY</h1>
+            </div>
+        </section>
+
+        <section class="scroll-section content-section horizontal-trigger">
+            <div class="section-content">
+                <h2 class="section-title">The Blueprint</h2>
+                <div class="horizontal-scroll-container">
+                    <div class="horizontal-item">
+                        <span class="card-num">01</span>
+                        <h3>Discovery</h3>
+                        <p>Defining the core architectural objectives.</p>
+                    </div>
+                    <div class="horizontal-item">
+                        <span class="card-num">02</span>
+                        <h3>Refinement</h3>
+                        <p>Polishing the abstract into measurable ROI.</p>
+                    </div>
+                    <div class="horizontal-item">
+                        <span class="card-num">03</span>
+                        <h3>Delivery</h3>
+                        <p>Deploying high-fidelity cinematic experiences.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

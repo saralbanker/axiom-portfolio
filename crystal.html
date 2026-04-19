@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Amethyst Crystal — Three.js</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0d0d12;
+            width: 100vw;
+            height: 100vh;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // SCENE SETUP
+        const scene = new THREE.Scene();
+
+        // CAMERA
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, 5);
+
+        // RENDERER
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x0d0d12);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.body.appendChild(renderer.domElement);
+
+        // LIGHTING
+        const ambientLight = new THREE.AmbientLight(0x1a0a2e, 0.4);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xc8aaff, 1.2);
+        directionalLight.position.set(3, 5, 3);
+        scene.add(directionalLight);
+
+        const pointLight1 = new THREE.PointLight(0x6633ff, 2.0, 8);
+        pointLight1.position.set(-2, 2, 2);
+        scene.add(pointLight1);
+
+        const pointLight2 = new THREE.PointLight(0xffffff, 0.5, 6);
+        pointLight2.position.set(0, -3, 1);
+        scene.add(pointLight2);
+
+        // ENHANCED ENVIRONMENT MAP (for refraction & highlights)
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        pmremGenerator.compileCubemapShader();
+
+        const envScene = new THREE.Scene();
+        
+        // Background Sphere
+        const envGeo = new THREE.SphereGeometry(10, 32, 32);
+        const envMaterial = new THREE.MeshBasicMaterial({ color: 0x050510, side: THREE.BackSide });
+        const envMesh = new THREE.Mesh(envGeo, envMaterial);
+        envScene.add(envMesh);
+
+        // Add "Hotspots" for sharp specular reflections (white highlights on edges)
+        const hotspotGeo = new THREE.SphereGeometry(1, 16, 16);
+        const hotspotMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        
+        const hotspots = [
+            { pos: [5, 10, 5], scale: 1.5 },
+            { pos: [-8, 2, -5], scale: 1 },
+            { pos: [0, -10, 0], scale: 2 }
+        ];
+        
+        hotspots.forEach(h => {
+            const mesh = new THREE.Mesh(hotspotGeo, hotspotMat);
+            mesh.position.set(...h.pos);
+            mesh.scale.setScalar(h.scale);
+            envScene.add(mesh);
+        });
+
+        const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
+            generateMipmaps: true,
+            minFilter: THREE.LinearMipmapLinearFilter
+        });
+        const cubeCamera = new THREE.CubeCamera(0.1, 20, cubeRenderTarget);
+        cubeCamera.update(renderer, envScene);
+
+        const envMap = pmremGenerator.fromCubemap(cubeCamera.renderTarget.texture).texture;
+        pmremGenerator.dispose();
+
+        // PROCEDURAL CRYSTAL GENERATOR
+        function createCrystalGeometry(scaleY = 1.0, noise = 0.3) {
+            // Start with an icosahedron for a basic faceted sphere
+            const geo = new THREE.IcosahedronGeometry(1, 0); 
+            const pos = geo.attributes.position;
+            const v = new THREE.Vector3();
+
+            for (let i = 0; i < pos.count; i++) {
+                v.fromBufferAttribute(pos, i);
+                // Stretch on Y and add ruggedness
+                v.y *= scaleY;
+                v.multiplyScalar(1.0 + (Math.random() - 0.5) * noise); 
+                pos.setXYZ(i, v.x, v.y, v.z);
+            }
+            
+            geo.computeVertexNormals();
+            // Critical for the "Crystal" look: ensure faces are flat
+            return geo.toNonIndexed(); 
+        }
+
+        const crystalGroup = new THREE.Group();
+        scene.add(crystalGroup);
+
+        // OUTER SHELL (The high-refraction glass)
+        const outerGeo = createCrystalGeometry(2.0, 0.4);
+        const outerMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0x1a0630,
+            emissive: 0x000000,
+            roughness: 0.1,
+            metalness: 0.1,
+            transmission: 0.95,
+            thickness: 2.5,
+            ior: 1.8,
+            reflectivity: 1.0,
+            transparent: true,
+            opacity: 1.0,
+            side: THREE.DoubleSide,
+            envMap: envMap,
+            envMapIntensity: 2.0,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.05
+        });
+
+        const outerMesh = new THREE.Mesh(outerGeo, outerMaterial);
+        crystalGroup.add(outerMesh);
+
+        // INNER CORE (The deep amethyst glow)
+        const innerGeo = createCrystalGeometry(1.5, 0.2);
+        const innerMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0x4a0e8f,
+            emissive: 0x2d0a5c,
+            emissiveIntensity: 0.35,
+            roughness: 0.5,
+            transmission: 0.5,
+            thickness: 1.0,
+            envMap: envMap,
+            envMapIntensity: 0.5
+        });
+
+        const innerMesh = new THREE.Mesh(innerGeo, innerMaterial);
+        innerMesh.scale.setScalar(0.7);
+        crystalGroup.add(innerMesh);
+
+        // WIREFRAME (Very subtle edge structure)
+        const wireframeMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x9966ff, 
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.04 
+        });
+        const wireframeMesh = new THREE.Mesh(outerGeo, wireframeMaterial);
+        crystalGroup.add(wireframeMesh);
+
+        // SHARP EDGE HIGHLIGHTS
+        const edgesGeometry = new THREE.EdgesGeometry(outerGeo, 24);
+        const edgesMaterial = new THREE.LineBasicMaterial({ 
+            color: 0xd4aaff, 
+            transparent: true, 
+            opacity: 0.2 
+        });
+        const edgesLines = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+        crystalGroup.add(edgesLines);
+
+
+        // PARTICLE SYSTEM (Space Dust)
+        const particleCount = 800;
+        const particlePositions = [];
+        for (let i = 0; i < particleCount; i++) {
+            let x, y, z;
+            do {
+                x = (Math.random() - 0.5) * 12;
+                y = (Math.random() - 0.5) * 12;
+                z = (Math.random() - 0.5) * 8;
+            } while (Math.sqrt(x*x + y*y + z*z) > 6);
+            particlePositions.push(x, y, z);
+        }
+
+        const particleGeo = new THREE.BufferGeometry();
+        particleGeo.setAttribute('position', new THREE.Float32BufferAttribute(particlePositions, 3));
+
+        const particleMat = new THREE.PointsMaterial({
+            color: 0xaaaacc,
+            size: 0.015,
+            transparent: true,
+            opacity: 0.5
+        });
+
+        const particles = new THREE.Points(particleGeo, particleMat);
+        scene.add(particles);
+
+        // RESIZE LISTENER
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ANIMATION LOOP
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now();
+
+            // 1. Crystal slow Y-rotation
+            crystalGroup.rotation.y += 0.003;
+
+            // 2. Crystal slow X-tilt + Organic Wobble
+            crystalGroup.rotation.x = Math.sin(time * 0.0004) * 0.12 + Math.cos(time * 0.0007) * 0.05;
+            crystalGroup.rotation.z = Math.sin(time * 0.0005) * 0.05;
+
+            // 3. Floating bob
+            crystalGroup.position.y = Math.sin(time * 0.0008) * 0.15;
+
+            // 4. Point light orbit (Dramatic Rim Lighting)
+            pointLight1.position.x = Math.cos(time * 0.0012) * 3.5;
+            pointLight1.position.z = Math.sin(time * 0.0012) * 3.5;
+            pointLight1.position.y = Math.sin(time * 0.0005) * 2;
+
+            // 5. Particles slow drift & Twinkle
+            particles.rotation.y += 0.00015;
+            particleMat.opacity = 0.4 + Math.sin(time * 0.001) * 0.2;
+
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

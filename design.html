@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design — ORVION</title>
+    <meta name="description" content="A curated gallery of immersive digital artifacts and minimalist design case studies.">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body class="is-loading">
+    <!-- UI/UX Enhancements -->
+    <div class="noise-layer"></div>
+    <div class="ambient-orb"></div>
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-dot"></div>
+    <div class="scroll-progress-container"><div class="scroll-progress-bar"></div></div>
+
+    <div class="transition-curtain">
+        <div class="preloader-counter">0%</div>
+    </div>
+
+    <header class="top-nav" role="banner">
+        <div class="logo">ORVION</div>
+        <nav class="pill-nav" role="navigation" aria-label="Main Navigation">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="business.html">Business</a>
+            <a href="design.html" class="active">Design</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <main class="ui-layer">
+
+        <section id="hero" class="scroll-section" data-page="design">
+            <div class="hero-layer layer-bg">
+                <img src="/src/assets/design-hero.png" alt="Design Hero">
+            </div>
+            <div class="hero-layer layer-fog">
+                <img src="/src/assets/bg/fog-layer-distant.png" alt="">
+            </div>
+            <canvas id="particle-canvas" class="hero-layer layer-particles"></canvas>
+            <div class="hero-layer layer-typography">
+                <h1 class="hero-text">GALLERY</h1>
+            </div>
+            <div class="hero-layer layer-typography-top">
+                <h1 class="hero-text text-outline">GALLERY</h1>
+            </div>
+        </section>
+
+        <section class="scroll-section content-section">
+            <div class="section-content">
+                <h2 class="section-title">Curation</h2>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <span class="card-num">01</span>
+                        <h3>Lumina</h3>
+                        <p>Architectural Precision</p>
+                    </div>
+                    <div class="project-card">
+                        <span class="card-num">02</span>
+                        <h3>Aeon</h3>
+                        <p>Generative Motion</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

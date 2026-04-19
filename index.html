@@ -4,347 +4,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AXIOM — Digital Gallery</title>
-    <meta name="description"
-        content="High-end UI/UX Design and Full-Stack Engineering. We build products worth talking about with editorial minimalism and performance-first architecture.">
-    <meta property="og:title" content="AXIOM — Editorial Minimalism">
-    <meta property="og:description"
-        content="Design. Build. Ship. Performance-grade engineering for startups and founders.">
-    <meta property="og:type" content="website">
-    <meta name="theme-color" content="#131313">
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap"
-        rel="stylesheet">
+    <title>ORVION — Creative Research Studio</title>
+    <meta name="description" content="ORVION is a creative research studio specializing in cinematic digital experiences and abstract visual engineering.">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="ORVION — Creative Research Studio">
+    <meta property="og:description" content="Cinematic digital experiences and abstract visual engineering.">
+    <meta property="og:image" content="/src/assets/crystal-hero.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Inter:wght@400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 
-<body>
-    <!-- Preloader -->
-    <div id="preloader" class="preloader">
-        <div class="pre-content-wrap">
-            <div class="pre-label mono-xs">INITIALIZING AXIOM_SYSTEM</div>
-            <div id="pre-count" class="pre-count">0</div>
-            <div class="pre-bar">
-                <div id="pre-bar-fill" class="pre-bar-fill"></div>
-            </div>
-        </div>
+<body class="is-loading">
+    <!-- UI/UX Enhancements -->
+    <div class="noise-layer"></div>
+    <div class="ambient-orb"></div>
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-dot"></div>
+    <div class="scroll-progress-container"><div class="scroll-progress-bar"></div></div>
+
+    <!-- Page Transition Curtain -->
+    <div class="transition-curtain">
+        <div class="preloader-counter">0%</div>
     </div>
 
-    <!-- Custom Cursor -->
-    <div id="cd" class="cd"></div>
-    <div id="cr" class="cr"></div>
+    <header class="top-nav" role="banner">
+        <div class="logo">ORVION</div>
+        <nav class="pill-nav" role="navigation" aria-label="Main Navigation">
+            <a href="index.html" class="active">Home</a>
+            <a href="about.html">About</a>
+            <a href="business.html">Business</a>
+            <a href="design.html">Design</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
 
-    <!-- 3D Progress Bar -->
-    <div class="v-progress-wrap glass mono-xs">
-        <div id="v-progress-fill" class="v-progress-fill"></div>
-        <div class="v-progress-label">EXPLORE_</div>
-    </div>
+    <main class="ui-layer">
 
-    <!-- Navigation -->
-    <nav id="nav" class="nav">
-        <a href="#hero" class="nav-logo mag">AXI<span>OM</span></a>
-        <div class="nav-links mono-xs">
-            <a href="#work">Work</a>
-            <a href="#services">Services</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
-        </div>
-        <div class="nav-actions">
-            <div class="nav-avail">
-                <span class="nav-avail-dot"></span>
-                <span class="nav-avail-txt mono-xs">Available Q3</span>
+        <section id="hero" class="scroll-section">
+            <!-- Background Layer -->
+            <div class="hero-layer layer-bg">
+                <img src="/src/assets/bg/bg-base.png" alt="">
             </div>
-            <a href="#contact" class="nav-cta mag mono-xs">Let's Build</a>
-            <button id="nav-hamburger" class="nav-hamburger">
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Mobile Menu -->
-    <div id="mm" class="mm">
-        <button id="mm-close" class="mm-close mono-xs">CLOSE_</button>
-        <div class="mm-links">
-            <a href="#work">Work</a>
-            <a href="#services">Services</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
-        </div>
-    </div>
-
-    <!-- WebGL Canvas -->
-    <canvas id="cv"></canvas>
-    <div class="proj-cursor-img" id="proj-cursor-img" aria-hidden="true">
-        <img id="proj-cursor-img-el" src="" alt="" loading="lazy">
-    </div>
-
-    <div class="sidebar-label" aria-hidden="true">
-        AXIOM STUDIO · AHMEDABAD · 2025 · INDIA
-    </div>
-
-
-    <!-- Scroll Container -->
-    <div id="scroll-container" class="scroll-container">
-
-        <!-- 02 — HERO -->
-        <section id="hero" class="hero-section" data-z-depth="100">
-            <div class="hero-sticky">
-                <div class="hero-content">
-                    <h1 class="hero-h1 split-heading" data-a>
-                        <span>Design.</span><br>
-                        <span>Build.</span><br>
-                        <span class="hero-accent">Ship.</span>
-                    </h1>
-                    <div class="hero-services mono-xs" data-a>
-                        UI/UX Design <span class="hero-dot"></span> Full-Stack Engineering <span
-                            class="hero-dot"></span> WebGL & 3D
-                    </div>
-                    <div class="hero-ctas" data-a>
-                        <a href="#work" class="btn-primary mag mono-xs">See Our Work</a>
-                        <a href="#contact" class="btn-secondary mag mono-xs">Start a Project</a>
-                    </div>
-                </div>
-                <div class="scroll-hint">
-                    <div class="scroll-line"></div>
-                    <span class="mono-xs">SCROLL_TO_EXPLORE</span>
-                </div>
+            <!-- Fog Layer -->
+            <div class="hero-layer layer-fog">
+                <img src="/src/assets/bg/fog-layer-distant.png" alt="">
+            </div>
+            <!-- Particle Canvas (programmatic) -->
+            <canvas id="particle-canvas" class="hero-layer layer-particles"></canvas>
+            <!-- Hero Typography BEHIND Crystal (solid white text) -->
+            <div class="hero-layer layer-typography">
+                <h1 class="hero-text">ORVION</h1>
+            </div>
+            <!-- Crystal Image -->
+            <div class="hero-layer layer-crystal-group">
+                <div class="crystal-glow"></div>
+                <img src="/src/assets/crystal-hero.png" class="crystal-main" alt="Crystal">
+            </div>
+            <!-- Hero Typography IN FRONT of Crystal (outline only — glass effect) -->
+            <div class="hero-layer layer-typography-top">
+                <h1 class="hero-text text-outline">ORVION</h1>
+            </div>
+            <!-- Sparkle Icon -->
+            <div class="sparkle-icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 0C16 0 18 12 16 16C14 20 16 32 16 32C16 32 14 20 16 16C18 12 16 0 16 0Z" fill="white"/>
+                    <path d="M0 16C0 16 12 14 16 16C20 18 32 16 32 16C32 16 20 18 16 16C12 14 0 16 0 16Z" fill="white"/>
+                </svg>
             </div>
         </section>
 
-        <!-- 03 — MARQUEE -->
-        <section class="sec no-pb">
-            <div class="marq-wrap">
-                <div class="marq-track mono-xs">
-                    <span class="marq-item">Three.js</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">React</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Figma</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">WebGL</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">GSAP</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Node.js</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Python</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Blender</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">GLSL</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Lenis</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Zustand</span><span class="marq-sep">◆</span>
-                    <!-- Repeat for loop -->
-                    <span class="marq-item">Three.js</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">React</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Figma</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">WebGL</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">GSAP</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Node.js</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Python</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Blender</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">GLSL</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Lenis</span><span class="marq-sep">◆</span>
-                    <span class="marq-item">Zustand</span><span class="marq-sep">◆</span>
-                </div>
+        <section id="about" class="scroll-section">
+            <div class="section-content">
+                <h2 class="section-title">A Visionary Edge</h2>
+                <p class="section-desc">We bridge the gap between abstract art and digital precision, crafting immersive experiences that redefine the modern web.</p>
             </div>
         </section>
 
-        <!-- 04 — ABOUT -->
-        <section id="about" class="sec" data-z-depth="50">
-            <div class="container">
-                <span class="sec-bg-num" aria-hidden="true">01</span>
-                <div class="sec-label mono-xs">04 — ABOUT</div>
-                <div class="about-grid">
-                    <div class="about-quote">
-                        <h2 class="split-heading">We are AXIOM — a studio that designs, builds, and ships digital
-                            products <em>people actually use.</em></h2>
-                        <p class="mono-xs">No offshore teams. No account managers. Just the two people who do the work.
-                        </p>
+        <section id="projects" class="scroll-section">
+            <div class="section-content">
+                <h2 class="section-title">Selected Works</h2>
+                <div class="projects-grid">
+                    <div class="project-card">
+                        <span class="card-num">01</span>
+                        <h3>Lumina</h3>
+                        <p>Digital Architecture</p>
                     </div>
-                    <div class="about-content">
-                        <div class="stat-row">
-                            <div class="stat-card glass">
-                                <div class="stat-n">50+</div>
-                                <div class="stat-l mono-xs">Projects</div>
-                            </div>
-                            <div class="stat-card glass">
-                                <div class="stat-n">3</div>
-                                <div class="stat-l mono-xs">Disciplines</div>
-                            </div>
-                            <div class="stat-card glass">
-                                <div class="stat-n">100%</div>
-                                <div class="stat-l mono-xs">Client Return</div>
-                            </div>
-                        </div>
-                        <div class="about-text">
-                            <p>Every project gets the full stack: product strategy, pixel-perfect design, and
-                                production-grade engineering. We've worked with bootstrapped founders and funded
-                                startups across fintech, SaaS, and consumer tech.</p>
-                            <p>Based in Ahmedabad. Working globally. From 48-hour prototypes to 6-month product builds —
-                                we've done both, and we know the difference.</p>
-                        </div>
+                    <div class="project-card">
+                        <span class="card-num">02</span>
+                        <h3>Aether</h3>
+                        <p>Immersive Audio</p>
+                    </div>
+                    <div class="project-card">
+                        <span class="card-num">03</span>
+                        <h3>Obsidian</h3>
+                        <p>Minimalist Motion</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 05 — SERVICES -->
-        <section id="services" class="sec" data-z-depth="-20">
-            <div class="container">
-                <span class="sec-bg-num" aria-hidden="true">02</span>
-                <div class="sec-label mono-xs">05 — SERVICES</div>
-                <h2 class="sec-h2">Five disciplines.<br><em>One obsession.</em></h2>
-                <p class="svc-intro">We don't split teams. Every project gets the full AXIOM stack — design,
-                    engineering, and performance working as one.</p>
-                <div class="svc-list">
-                    <div class="svc-row">
-                        <div class="svc-num mono-xs">01</div>
-                        <div class="svc-name">UI/UX Design</div>
-                        <div class="svc-tech mono-xs">Figma / Framer</div>
-                        <div class="svc-desc">From blank canvas to design system. Figma, Framer, user testing. We've
-                            built systems with 100+ components that teams actually use.</div>
-                        <div class="svc-arr">→</div>
-                    </div>
-                    <div class="svc-row">
-                        <div class="svc-num mono-xs">02</div>
-                        <div class="svc-name">Full-Stack Development</div>
-                        <div class="svc-tech mono-xs">Next.js / Node.js</div>
-                        <div class="svc-desc">React, Next.js, Node.js, Python. We write the architecture, the tests, and
-                            the docs. We maintain what we deploy. No technical debt passed to your next hire.</div>
-                        <div class="svc-arr">→</div>
-                    </div>
-                    <div class="svc-row">
-                        <div class="svc-num mono-xs">03</div>
-                        <div class="svc-name">High-Performance WebGL</div>
-                        <div class="svc-tech mono-xs">Three.js / custom shaders</div>
-                        <div class="svc-desc">Three.js, GSAP, custom GLSL shaders. The kind of web that wins Awwwards.
-                            If your brand deserves a 3D experience, we build it without a plugin.</div>
-                        <div class="svc-arr">→</div>
-                    </div>
-                    <div class="svc-row">
-                        <div class="svc-num mono-xs">04</div>
-                        <div class="svc-name">API & Backend Systems</div>
-                        <div class="svc-tech mono-xs">PostgreSQL / Supabase</div>
-                        <div class="svc-desc">Supabase, PostgreSQL, REST and GraphQL. Real-time systems, scalable
-                            infrastructure, and cloud deployments that handle your launch day.</div>
-                        <div class="svc-arr">→</div>
-                    </div>
-                    <div class="svc-row">
-                        <div class="svc-num mono-xs">05</div>
-                        <div class="svc-name">Performance & SEO</div>
-                        <div class="svc-tech mono-xs">Lighthouse / SEO Audits</div>
-                        <div class="svc-desc">Core Web Vitals, structured data, sub-2s load targets. We've taken
-                            production sites from 40 to 95+ Lighthouse. We optimise for the metrics that matter.</div>
-                        <div class="svc-arr">→</div>
-                    </div>
+        <section id="contact" class="scroll-section">
+            <div class="section-content">
+                <h2 class="section-title">Start a Dialogue</h2>
+                <p class="section-desc">Ready to craft something extraordinary? Let's connect.</p>
+                <div class="contact-cta">
+                    <a href="mailto:hello@orvion.studio" class="btn-primary">Get in Touch</a>
                 </div>
             </div>
         </section>
-
-        <!-- 06 — WORK -->
-        <section id="work" class="sec" data-z-depth="20">
-            <div class="container">
-                <span class="sec-bg-num" aria-hidden="true">03</span>
-                <div class="sec-label mono-xs">06 — WORK</div>
-                <h2 class="sec-h2 split-heading">Selected work. <em>Real results.</em></h2>
-                <p class="svc-intro">Six projects. Three disciplines. Zero compromises.</p>
-
-                <div class="filter-tabs mono-xs">
-                    <button class="ftab active" data-filter="all">All</button>
-                    <button class="ftab" data-filter="ui">UI/UX</button>
-                    <button class="ftab" data-filter="dev">Dev</button>
-                    <button class="ftab" data-filter="web">Web</button>
-                </div>
-
-                <div id="project-grid" class="proj-list-v2">
-                    <!-- JS fills this -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 07 — CONTACT -->
-        <section id="contact" class="sec no-pb">
-            <div class="container">
-                <span class="sec-bg-num" aria-hidden="true">04</span>
-                <div class="sec-label mono-xs">07 — CONTACT</div>
-                <div class="contact-grid">
-                    <div class="contact-info">
-                        <h2 class="split-heading">Let's build something <em>worth talking about.</em></h2>
-                        <p>We take on 4 projects per quarter. If you're reading this, there may still be a slot.
-                            Response within 24 hours.</p>
-                        <div class="contact-details mono-xs">
-                            <div class="contact-link">Email: <a href="mailto:hello@axiom.studio">hello@axiom.studio</a>
-                            </div>
-                            <div class="contact-link">Location: Ahmedabad, India · Remote globally</div>
-                            <div class="contact-link">Hours: Mon–Fri · 9AM–8PM IST</div>
-                        </div>
-                    </div>
-                    <div class="contact-form-wrap glass">
-                        <form id="contact-form" class="form" action="https://formspree.io/f/xvgpewzb" method="POST">
-                            <div class="fg">
-                                <label class="mono-xs" for="form-name">NAME_</label>
-                                <input type="text" id="form-name" name="name" class="fi"
-                                    placeholder="What should we call you?" required>
-                            </div>
-                            <div class="fg">
-                                <label class="mono-xs" for="form-email">EMAIL_</label>
-                                <input type="email" id="form-email" name="email" class="fi"
-                                    placeholder="Where should we reply?" required>
-                            </div>
-                            <div class="fg">
-                                <label class="mono-xs" for="form-service">SERVICE_</label>
-                                <select id="form-service" name="service" class="fse">
-                                    <option value="ui">UI/UX Design</option>
-                                    <option value="dev">Full-Stack Development</option>
-                                    <option value="web">High-Performance WebGL</option>
-                                    <option value="api">API & Backend Systems</option>
-                                    <option value="seo">Performance & SEO</option>
-                                    <option value="other">Something Else</option>
-                                </select>
-                            </div>
-                            <div class="fg">
-                                <label class="mono-xs" for="form-message">BRIEF_</label>
-                                <textarea id="form-message" name="message" class="fta" rows="4"
-                                    placeholder="Tell us about your vision..." required></textarea>
-                            </div>
-                            <button type="submit" class="btn-primary mono-xs">Send It →</button>
-                        </form>
-                        <div id="form-success" class="form-success" style="display: none;">
-                            <h3 class="success-title">GOT IT.</h3>
-                            <p class="success-sub mono-xs">We'll be in touch within 24 hours.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 08 — FOOTER -->
-        <footer class="footer">
-            <div class="container">
-                <div class="footer-email-cta">
-                    <a href="mailto:hello@axiom.studio" class="footer-email-link char-wave mag">
-                        hello@axiom.studio
-                    </a>
-                </div>
-
-                <div class="footer-top">
-                    <div class="footer-brand">
-                        <div class="footer-logo">AXI<span>OM</span></div>
-                        <p class="footer-tag">Design. Build. Ship.</p>
-                    </div>
-                    <nav class="footer-nav mono-xs">
-                        <a href="#work">Work</a>
-                        <a href="#services">Services</a>
-                        <a href="#about">About</a>
-                        <a href="#contact">Contact</a>
-                    </nav>
-                </div>
-                <div class="footer-bot mono-xs">
-                    <div>© 2025 AXIOM Studio — Ahmedabad, India</div>
-                    <a href="mailto:hello@axiom.studio">hello@axiom.studio</a>
-                </div>
-            </div>
-        </footer>
-
-    </div> <!-- End Scroll Container -->
+    </main>
 
     <script type="module" src="/src/main.js"></script>
 </body>
